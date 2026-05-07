@@ -1,12 +1,10 @@
 from flask import Flask
 from config import Config
-from database.database import db
+from infrastructure.database.database import db
 
 from flask_cors import CORS
 
-from controllers.controller import globalBp
-
-from database.models.category import Category
+from application.controllers.controller import globalBp
 
 app = Flask(__name__)
 CORS(app)

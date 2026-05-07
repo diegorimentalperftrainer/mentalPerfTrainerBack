@@ -1,6 +1,6 @@
 from sqlalchemy.sql import func
 
-from database.database import db
+from infrastructure.database.database import db
 
 
 class Category(db.Model):
