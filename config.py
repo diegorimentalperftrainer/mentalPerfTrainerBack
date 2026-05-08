@@ -8,10 +8,8 @@ load_dotenv(os.path.join(basedir, '.env'))
 
 class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
-    SMTP_HOST = os.getenv('SMTP_HOST')
-    SMTP_PORT = os.getenv('SMTP_PORT')
+    MAIL_SENDERS_KEY = os.getenv('MAIL_SENDERS_KEY')
     SMTP_USER = os.getenv('SMTP_USER')
-    SMTP_PASSWORD = os.getenv('SMTP_PASSWORD')
     ADMIN_MAIL = os.getenv('ADMIN_MAIL')
 
     def __init__(self):

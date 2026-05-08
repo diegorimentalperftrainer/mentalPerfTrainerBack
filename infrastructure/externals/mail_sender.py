@@ -1,6 +1,5 @@
-import smtplib
-from email.message import EmailMessage
-from application.constants import error
+import base64
+import requests
 
 from config import Config
 
@@ -32,25 +31,34 @@ class MailContext:
             return attachments
         raise TypeError(error.ATTACHMENT_ERROR)
 
+class MailSender:
+    def __init__(self):
+        self.api_key = Config.MAIL_SENDERS_KEY
+        self.sender = Config.SMTP_USER
 
-def send_mail(ctx):
-    if not ctx.recipients:
-        raise ValueError(error.EMPTY_RECIPIENT_ERROR)
+    def send_mail(self, ctx):
+        attachments = []
+        for file_path in ctx.attachments:
+            with open(file_path, "rb") as f:
+                attachments.append({
+                    "filename": file_path.split("/")[-1],
+                    "content": base64.b64encode(f.read()).decode("utf-8"),
+                    "disposition": "attachment"
+                })
 
-    msg = EmailMessage()
-    msg["Subject"] = ctx.subject
-    msg["From"] = ctx.from_name
-    msg["To"] = ", ".join(ctx.recipients)
+        payload = {
+            "from": {"email": self.sender, "name": ctx.from_name},
+            "to": [{"email": r} for r in ctx.recipients],
+            "subject": ctx.subject,
+            "html": ctx.body,
+            "attachments": attachments
+        }
 
-    msg.set_content(ctx.body)
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
 
-    for file_path in ctx.attachments:
-        with open(file_path, "rb") as f:
-            file_data = f.read()
-            file_name = file_path.split("/")[-1]
+        requests.post("https://api.mailersend.com/v1/email", json=payload, headers=headers)
 
-        msg.add_attachment(file_data, maintype="image", subtype="png", filename=file_name)
-
-    with smtplib.SMTP_SSL(Config.SMTP_HOST, Config.SMTP_PORT) as smtp:
-        smtp.login(Config.SMTP_USER, Config.SMTP_PASSWORD)
-        smtp.send_message(msg)
+mail_sender = MailSender()

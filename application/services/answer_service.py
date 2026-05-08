@@ -2,8 +2,7 @@ from application.constants import email
 from application.helpers import create_graph
 from infrastructure.database.repositories.category_repository import CategoryRepository
 from infrastructure.database.repositories.question_repository import QuestionRepository
-from infrastructure.externals import mail_sender
-from infrastructure.externals.mail_sender import MailContext
+from infrastructure.externals.mail_sender import MailContext, mail_sender
 from datetime import datetime
 from config import Config
 
